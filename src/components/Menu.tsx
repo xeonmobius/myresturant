@@ -54,21 +54,31 @@ const Menu = () => {
           onClick={() => setIsOpen(false)}
         />
       )}
-      <div className="bg-red-500 text-white absolute left-0 top-24 w-full h-[calc(100vh-6rem)] flex flex-col gap-8 items-center justify-center text-3xl z-10">
-        {links.map((link) => (
-          <Link key={link.id} href={link.url}>
-            {link.title}
-          </Link>
-        ))}
-        {!user ? (
-          <Link href="/login">Login</Link>
-        ) : (
-          <Link href="/order">Orders</Link>
-        )}
-        <Link href="/cart">
+      {isOpen && (
+        <div className="bg-red-500 text-white absolute left-0 top-24 w-full h-[calc(100vh-6rem)] flex flex-col gap-8 items-center justify-center text-3xl z-10">
+          {links.map((link) => (
+            <Link
+              key={link.id}
+              href={link.url}
+              onClick={() => setIsOpen(false)}
+            >
+              {link.title}
+            </Link>
+          ))}
+          {!user ? (
+            <Link href="/login" onClick={() => setIsOpen(false)}>
+              Login
+            </Link>
+          ) : (
+            <Link href="/order" onClick={() => setIsOpen(false)}>
+              Orders
+            </Link>
+          )}
+          <Link href="/cart" onClick={() => setIsOpen(false)}>
             <CartIcon />
-        </Link>
-      </div>
+          </Link>
+        </div>
+      )}
     </div>
   );
 };
