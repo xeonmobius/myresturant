@@ -28,7 +28,7 @@ const CategoryPage = async ({ params }: Props) => {
       {products.map((pizza) => (
         <Link
           key={pizza.id}
-          href={`/menu/${pizza.id}`}
+          href={`/product/${pizza.id}`}
           className="group w-full h-[60vh] border-r-2 border-b-2 border-red-500 sm:w-1/2 lg:w-1/3 p-4 flex flex-col justify-between even:bg-fuchsia-50"
         >
           {/* Image Container */}
