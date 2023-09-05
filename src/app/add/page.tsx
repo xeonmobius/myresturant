@@ -126,8 +126,14 @@ const AddPage = () => {
         </div>
         <div>
           {options.map((item) => (
-            <div className="ring-1 p-2 ring-red-500 rounded-md cursor-pointer" key={item.title} 
-            onClick={()=>setOptions(options.filter(option=>option.title!==item.title))}>
+            <div
+              className="ring-1 p-2 ring-red-500 rounded-md cursor-pointer"
+              key={item.title}
+              onClick={() =>
+                setOptions(
+                  options.filter((option) => option.title !== item.title)
+                )
+              }
             >
               <span>{item.title}</span>
               <span>{item.additionalPrice}</span>
