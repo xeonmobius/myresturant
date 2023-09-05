@@ -5,6 +5,7 @@ import { getAuthSession } from "@/utils/auth";
 // Fetch all orders
 export const GET = async (req: NextRequest) => {
   const session = await getAuthSession();
+
   if (session) {
     try {
       if (session.user.isAdmin) {
@@ -34,8 +35,36 @@ export const GET = async (req: NextRequest) => {
   }
 };
 
-export const POST = () => {
-  return new NextResponse("Hello", {
-    status: 200,
-  });
+// Create order
+export const POST = async (req:NextRequest) => {
+  const session = await getAuthSession();
+  
+  if (session) {
+    try {
+      
+      const body = await req.json();
+
+      if (session.user) {
+        const order = await prisma.order.create(
+          {
+            data:body
+          }
+        );
+        return new NextResponse(JSON.stringify(order.id), { status: 201 });
+      }
+    } catch (err) {
+      console.log(err);
+      return new NextResponse(
+        JSON.stringify({ message: "Something went wrong!" }),
+        { status: 500 }
+      );
+    }
+  } else {
+    return new NextResponse(
+      JSON.stringify({ message: "You need to be logged in to access this" }),
+      {
+        status: 401,
+      }
+    );
+  }
 };
