@@ -31,6 +31,7 @@ const AddPage = () => {
   });
 
   const [options, setOptions] = useState<Option[]>([]);
+  const [file, setFile] = useState<File>();
 
   const router = useRouter();
 
@@ -40,6 +41,29 @@ const AddPage = () => {
 
   if (status === "unauthenticated" || !session?.user.isAdmin) {
     router.push("/");
+  }
+
+  const handleChangeImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const target = e.target as HTMLInputElement;
+    const item = (target.files as FileList)[0];
+    setFile(item);
+  }
+
+  const upload = async () => {
+
+    const data = new FormData();
+
+    data.append("file", file!);
+    data.append("upload_preset", "myresturant");
+
+    const res = await fetch("https://api.cloudinary.com/v1_1/depdqxrf6/image/", {
+      method: "POST",
+      headers: { "Content-Type": "multipart/form-data" },
+      body: data,
+    });
+
+    const responseData = await res.json();
+    return responseData.url;
   }
 
   const handleChange = (
@@ -56,9 +80,30 @@ const AddPage = () => {
     });
   };
 
+  const handleSubmit = async (e:React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      
+      const url = await upload();
+      const res = await fetch("http://localhost:3000/api/products", {
+        method: "POST",
+        body: JSON.stringify({
+          img: url,
+          ...inputs,
+          options,
+        })
+      })
+
+      const data = await res.json();
+      router.push(`/product/${data.id}`);
+
+    } catch (error) {
+      console.log(error);}
+  }
+
   return (
     <div>
-      <form className="shadow-lg flex flex-wrap gap-4 p-8">
+      <form className="shadow-lg flex flex-wrap gap-4 p-8" onSubmit={handleSubmit}>
         <h1>Add New Product</h1>
         <div className="w-full flex flex-col gap-2">
           <label>Title</label>
@@ -67,6 +112,15 @@ const AddPage = () => {
             type="text"
             name="title"
             onChange={handleChange}
+          />
+        </div>
+        <div className="w-full flex flex-col gap-2">
+          <label>Image</label>
+          <input
+            className="ring-1 ring-red-200 p-2 rounded-sm"
+            type="file"
+            name="image"
+            onChange={handleChangeImage}
           />
         </div>
         <div className="w-full flex flex-col gap-2">
@@ -91,7 +145,7 @@ const AddPage = () => {
           <input
             className="ring-1 ring-red-200 p-2 rounded-sm"
             type="text"
-            name="category"
+            name="catSlug"
             onChange={handleChange}
           />
         </div>
@@ -140,7 +194,10 @@ const AddPage = () => {
             </div>
           ))}
         </div>
-        <button type="submit" className="p-2 w-full bg-red-500 text-white">
+        <button
+          type="submit"
+          className="p-2 w-full bg-red-500 text-white"
+        >
           Submit
         </button>
       </form>
